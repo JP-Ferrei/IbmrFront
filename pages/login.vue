@@ -1,7 +1,7 @@
 <template>
-  <div class="contaier d-flex align-center  xxx">
-    <div class="d-flex align-center justify-start">
-      <LoginCard />
+  <div class="" style="margin:auto;">
+    <div class="teste" style="margin:auto;">
+      <LoginCard class="d-flex justify-center align-center" />
     </div>
     <Nuxt />
   </div>
@@ -9,7 +9,8 @@
 
 <script lang="ts">
 import { Component, Prop, Watch, Vue } from "nuxt-property-decorator";
+import { PageBase } from "~/core/models/PageBase";
 
 @Component
-export default class Login extends Vue {}
+export default class Login extends PageBase {}
 </script>

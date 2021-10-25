@@ -1,49 +1,76 @@
 <template>
-  <div class="">
+  <div>
     <v-card>
-      <v-navigation-drawer height="100vh" permanent expand-on-hover>
-        <v-list>
-          <v-list-item class="px-2">
-            <v-list-item-avatar>
-              <v-img
-                src="https://randomuser.me/api/portraits/women/85.jpg"
-              ></v-img>
-            </v-list-item-avatar>
-          </v-list-item>
+      <v-navigation-drawer
+        :mini-variant="mini"
+        height="100vh"
+        permanent
+        mini-variant-width="80px"
+      >
+        <v-list-item class="px-2">
+          <v-list-item-avatar>
+            <v-img src="https://randomuser.me/api/portraits/men/85.jpg"></v-img>
+          </v-list-item-avatar>
 
-          <v-list-item link>
-            <v-list-item-content>
-              <v-list-item-title class="text-h6">
-                Sandra Adams
-              </v-list-item-title>
-              <v-list-item-subtitle>sandra_a88@gmail.com</v-list-item-subtitle>
-            </v-list-item-content>
-          </v-list-item>
-        </v-list>
+          <v-list-item-title>{{ usuario.nome }}</v-list-item-title>
+        </v-list-item>
 
         <v-divider></v-divider>
 
-        <v-list nav dense>
-          <v-list-item link>
-            <v-list-item-icon>
-              <v-icon>mdi-folder</v-icon>
+        <v-list dense>
+          <v-list-item v-for="item in items" :key="item.title" link>
+            <v-list-item-icon class="d-flex align-center justify-center">
+              <v-tooltip right>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                    icon
+                    v-bind="attrs"
+                    v-on="on"
+                    @click="to(item)"
+                    width="100%"
+                  >
+                    <v-icon>{{ item.icon }}</v-icon>
+                  </v-btn>
+                </template>
+                <span>{{ item.title }}</span>
+              </v-tooltip>
             </v-list-item-icon>
-            <v-list-item-title>My Files</v-list-item-title>
-          </v-list-item>
-          <v-list-item link>
-            <v-list-item-icon>
-              <v-icon>mdi-account-multiple</v-icon>
-            </v-list-item-icon>
-            <v-list-item-title>Shared with me</v-list-item-title>
-          </v-list-item>
-          <v-list-item link>
-            <v-list-item-icon>
-              <v-icon>mdi-star</v-icon>
-            </v-list-item-icon>
-            <v-list-item-title>Starred</v-list-item-title>
           </v-list-item>
         </v-list>
       </v-navigation-drawer>
     </v-card>
   </div>
+  <!-- <div style="background: red; height:100vh; width:60px">
+    <v-btn></v-btn>
+  </div> -->
 </template>
+
+<script lang="ts">
+import { Component, Prop, Watch, Vue } from "nuxt-property-decorator";
+import { Usuario } from "~/core/models/Ator/Usuario";
+import { PageBase } from "~/core/models/PageBase";
+import { UsuarioService } from "../core/services/Ator/UsuarioService";
+
+@Component
+export default class MenuLateral extends PageBase {
+  usuarioService: UsuarioService = new UsuarioService();
+  usuario: Usuario = new Usuario();
+  items: any[] = [
+    { title: "Clientes", icon: "mdi-account-outline", to: "/Clientes" },
+    { title: "Dentistas", icon: "mdi-account-multiple", to: "/Dentistas" },
+    { title: "Estoque", icon: "mdi-folder", to: "/Estoque" },
+    { title: "Agendamentos", icon: "mdi-calendar", to: "/Agendamentos" }
+  ];
+  mini: boolean = true;
+  async created() {
+    const response = await this.usuarioService.ObterPorId(this.app.usuarioId);
+    this.usuario = response.data;
+  }
+
+  to(item: any) {
+    this.$router.push(item.to);
+  }
+}
+</script>
+
+<style scoped></style>
