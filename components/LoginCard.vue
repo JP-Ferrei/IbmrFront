@@ -45,6 +45,7 @@
             filled
             rounded
             dense
+            type="password"
             append-icon="mdi-lock"
             width="400px"
             v-model="acesso.senha"
@@ -96,8 +97,8 @@ export default class LoginCard extends PageBase {
       localStorage.setItem("sessionApp", JSON.stringify(res.data));
       console.log("3");
 
-      this.$router.push({ name: "index" });
-      this.$nuxt.$router.push({ name: "index" });
+      this.$router.push({ name: "Agendamentos" });
+      //this.$nuxt.$router.push({ name: "index" });
       console.log("4");
 
       console.log(res.data);

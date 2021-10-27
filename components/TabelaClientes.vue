@@ -22,12 +22,49 @@
         item-key="nome"
         class="elevation-1"
         :search="search"
-      ></v-data-table>
+      >
+        <template v-slot:[`item.actions`]="{ item }">
+          <!-- <v-btn
+            @click="VerDetalhes(item.id)"
+            class="mx-1"
+            icon
+            tile
+            color="white"
+            style="background: grey; border-radius: 5px"
+            ><v-icon>mdi-magnify</v-icon></v-btn
+          > -->
+          <!-- <v-btn
+            @click="EditarCliente(item.id)"
+            class="mx-1"
+            icon
+            tile
+            color="white"
+            style="background: #9CCC65; border-radius: 5px"
+            ><v-icon small>mdi-pencil</v-icon></v-btn
+          > -->
+          <v-btn
+            @click="DeletarCliente(item.id)"
+            class="mx-1"
+            icon
+            tile
+            color="white"
+            style="background: #EF5350; border-radius: 5px"
+            ><v-icon small>mdi-delete</v-icon></v-btn
+          >
+        </template>
+      </v-data-table>
     </v-card>
     <ClienteDialog
       v-model="dialogState"
       @fechou="fecharDialog()"
       @ClienteAdicionado="lista()"
+    />
+
+    <ConfirmDialog
+      @Confirmar="deletarConfirm = true"
+      @Cancelar="dialogDeletar = false"
+      :textoMensagem="'Tem certeza que deseja deletar este produto?'"
+      v-model="dialogDeletar"
     />
   </div>
 </template>
@@ -39,12 +76,16 @@ import { ClienteService } from "../core/services/Ator/ClienteService";
 
 @Component
 export default class TabelaClientes extends PageBase {
-  clientes: any[] = [];
-  clienteService: ClienteService = new ClienteService();
-  search = "";
   dialogState: boolean = false;
-  puxarLista: number = 0;
 
+  dialogDeletar: boolean = false;
+  deletarConfirm: boolean = false;
+  clienteId: string = "";
+
+  clienteService: ClienteService = new ClienteService();
+
+  search = "";
+  clientes: any[] = [];
   desserts: any = [];
   colunas: any = [
     {
@@ -57,7 +98,7 @@ export default class TabelaClientes extends PageBase {
     { text: "cpf", value: "cpf" },
     { text: "email", value: "email" },
     { text: "telefone", value: "telefone" },
-    { text: "responsavel", value: "responsavel" }
+    { text: "opções", value: "actions", sortable: false }
   ];
 
   abrirDialog() {
@@ -88,6 +129,31 @@ export default class TabelaClientes extends PageBase {
     this.desserts = [];
     console.log(this.desserts);
     console.log(this.clientes);
+  }
+
+  VerDetalhes(id: string) {}
+
+  Editar(id: string) {}
+
+  @Watch("deletarConfirm")
+  async WhatDeletar(val: boolean) {
+    if (val || this.deletarConfirm) {
+      await this.clienteService.Excluir(this.clienteId);
+      this.lista();
+      this.ResetarAcoes();
+    }
+  }
+
+  ResetarAcoes() {
+    this.deletarConfirm = false;
+    this.clienteId = "";
+    this.dialogDeletar = false;
+  }
+
+  DeletarCliente(id: string) {
+    this.dialogDeletar = true;
+    this.clienteId = id;
+    console.log(id);
   }
 }
 </script>

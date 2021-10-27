@@ -4,6 +4,7 @@ export const httpHeader = {
   headers: {
     "Content-Type": "application/json;charset=UTF-8",
     "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS",
     include: ""
   }
 };
@@ -26,16 +27,13 @@ http.interceptors.response.use(
   res => {
     return res;
   },
-  error => {
-    if (error.response.statusCode === 401) {
-      const response = error.response;
-      console.log(response);
-      console.log("teste");
-    }
-    //   localStorage.clear();
-    //   window.location.href = "/login";
-    // }
 
+  error => {
+    console.log(error.request.status);
+    if (error.response.status === 401) {
+      localStorage.clear();
+      window.location.href = "/login";
+    }
     return Promise.reject(error);
   }
 );

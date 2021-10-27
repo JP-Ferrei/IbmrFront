@@ -1,6 +1,16 @@
 <template>
-  <v-app>
-    <MenuLateral style="top: 0px; left: 0px; " />
+  <div class="" style="margin:auto;">
+    <div class="teste" style="margin:auto;">
+      <LoginCard class="d-flex justify-center align-center" />
+    </div>
     <Nuxt />
-  </v-app>
+  </div>
 </template>
+
+<script lang="ts">
+import { Component, Prop, Watch, Vue } from "nuxt-property-decorator";
+import { PageBase } from "~/core/models/PageBase";
+
+@Component
+export default class index extends PageBase {}
+</script>

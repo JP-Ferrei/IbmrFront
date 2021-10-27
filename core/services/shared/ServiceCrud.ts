@@ -5,15 +5,15 @@ export class ServiceCrud extends ServiceQuery {
     super(nomeControle);
   }
 
-  public Excluir(id: number) {
+  public Excluir(id: string) {
     return this._http.delete(`${this._nomeControle}/${id}`, this.GetHeader());
   }
 
   public Salvar(modelo: Shared.IEntity): Promise<any>;
-  public Salvar(modelo: any, id: number): Promise<any>;
-  public Salvar(modelo: any, id?: number): Promise<any> {
+  public Salvar(modelo: any, id: string): Promise<any>;
+  public Salvar(modelo: any, id?: string): Promise<any> {
     if (id) {
-      if (id > 0) {
+      if (id.length > 0) {
         return this._http.patch(
           `${this._nomeControle}/${id}`,
           modelo,

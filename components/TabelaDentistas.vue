@@ -23,7 +23,38 @@
         sort-by="nome"
         :search="search"
         class="elevation-1"
-        ><template v-slot:top>
+      >
+        <template v-slot:[`item.actions`]="{ item }">
+          <!-- <v-btn
+            @click="VerDetalhes(item.id)"
+            class="mx-1"
+            icon
+            tile
+            color="white"
+            style="background: grey; border-radius: 5px"
+            ><v-icon>mdi-magnify</v-icon></v-btn
+          > -->
+          <!-- <v-btn
+            @click="EditarCliente(item.id)"
+            class="mx-1"
+            icon
+            tile
+            color="white"
+            style="background: #9CCC65; border-radius: 5px"
+            ><v-icon small>mdi-pencil</v-icon></v-btn
+          > -->
+          <v-btn
+            @click="DeletarCliente(item.id)"
+            class="mx-1"
+            icon
+            tile
+            color="white"
+            style="background: #EF5350; border-radius: 5px"
+            ><v-icon small>mdi-delete</v-icon></v-btn
+          >
+        </template>
+
+        <template v-slot:top>
           <v-text-field
             v-model="search"
             label="Pesquisar Nome"
@@ -37,6 +68,13 @@
       @fechou="fecharDialog()"
       @DentistaAdicionado="lista()"
     />
+
+    <ConfirmDialog
+      @Confirmar="deletarConfirm = true"
+      @Cancelar="dialogDeletar = false"
+      :textoMensagem="'Tem certeza que deseja deletar este Dentista?'"
+      v-model="dialogDeletar"
+    />
   </div>
 </template>
 <script lang="ts">
@@ -47,12 +85,16 @@ import { Dentista } from "~/core/models/Ator/Dentista";
 
 @Component
 export default class TabelaDentistas extends PageBase {
-  dentistaArray: any[] = [];
-  search = "";
   dialogState: boolean = false;
+  search = "";
+
+  dialogDeletar: boolean = false;
+  deletarConfirm: boolean = false;
+  dentistaId: string = "";
 
   dentistaService: DentistaService = new DentistaService();
 
+  dentistaArray: any[] = [];
   vazio: [] = [];
   desserts: any = [];
   colunas: any = [
@@ -63,10 +105,10 @@ export default class TabelaDentistas extends PageBase {
       value: "nome"
     },
     { text: "id", value: "id" },
-    { text: "cpf", value: "cpf" },
     { text: "email", value: "email" },
     { text: "telefone", value: "telefone" },
-    { text: "Cro", value: "cro" }
+    { text: "Cro", value: "cro" },
+    { text: "opções", value: "actions", sortable: false }
   ];
 
   abrirDialog() {
@@ -99,6 +141,27 @@ export default class TabelaDentistas extends PageBase {
     this.dentistaArray = [];
     console.log(this.desserts);
     console.log(this.dentistaArray);
+  }
+
+  @Watch("deletarConfirm")
+  async WhatDeletar(val: boolean) {
+    if (val || this.deletarConfirm) {
+      await this.dentistaService.Excluir(this.dentistaId);
+      this.lista();
+      this.ResetarAcoes();
+    }
+  }
+
+  ResetarAcoes() {
+    this.deletarConfirm = false;
+    this.dentistaId = "";
+    this.dialogDeletar = false;
+  }
+
+  DeletarCliente(id: string) {
+    this.dialogDeletar = true;
+    this.dentistaId = id;
+    console.log(id);
   }
 }
 </script>
