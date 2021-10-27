@@ -10,7 +10,7 @@
         class="text-caption"
         color="success"
         min-width="160"
-        @click="abrirProdutoDialog()"
+        @click="abrirDialog()"
         ><v-icon class="mr-1">mdi-plus</v-icon>Adicionar</v-btn
       >
     </v-col>
@@ -19,10 +19,11 @@
       <v-data-table
         :headers="colunas"
         :items="desserts"
-        :items-per-page="5"
+        item-key="nome"
+        sort-by="nome"
+        :search="search"
         class="elevation-1"
-      >
-        <template v-slot:top>
+        ><template v-slot:top>
           <v-text-field
             v-model="search"
             label="Pesquisar Nome"
@@ -31,70 +32,73 @@
         </template>
       </v-data-table>
     </v-card>
-    <ProdutoDialog
+    <DentistaDialog
       v-model="dialogState"
-      @fechou="fecharProdutoDialog()"
-      @produtoAdicionado="lista()"
+      @fechou="fecharDialog()"
+      @DentistaAdicionado="lista()"
     />
   </div>
 </template>
-
 <script lang="ts">
 import { Component, Prop, Watch } from "nuxt-property-decorator";
-import { Produto } from "~/core/models/Geral/Produto";
 import { PageBase } from "~/core/models/PageBase";
-import { ProdutoService } from "~/core/services/geral/ProdutoService";
-import { ArmazemService } from "../core/services/geral/ArmazemService";
+import { DentistaService } from "~/core/services/Ator/DentistaService";
+import { Dentista } from "~/core/models/Ator/Dentista";
+
 @Component
-export default class TabelaEstoque extends PageBase {
+export default class TabelaDentistas extends PageBase {
+  dentistaArray: any[] = [];
+  search = "";
   dialogState: boolean = false;
 
-  armazemService: ArmazemService = new ArmazemService();
-  produtoService: ProdutoService = new ProdutoService();
+  dentistaService: DentistaService = new DentistaService();
 
-  search: string = "";
-  produto: Produto[] = [];
+  vazio: [] = [];
   desserts: any = [];
-
   colunas: any = [
     {
-      text: "Produtos",
+      text: "dentista",
       align: "start",
       sortable: true,
       value: "nome"
     },
-    { text: "Quantidade", value: "quantidade" },
-    { text: "validade", value: "validade" },
-    { text: "Data Adicao", value: "dataDeAdicao" }
+    { text: "id", value: "id" },
+    { text: "cpf", value: "cpf" },
+    { text: "email", value: "email" },
+    { text: "telefone", value: "telefone" },
+    { text: "Cro", value: "cro" }
   ];
+
+  abrirDialog() {
+    this.dialogState = true;
+  }
+
+  fecharDialog() {
+    this.dialogState = false;
+  }
 
   async created() {
     this.getLista();
   }
+
   async getLista() {
-    const res = await this.produtoService.ListarTudo();
-    this.produto.push(res.data.items);
-    this.desserts = this.produto[0];
+    const res = await this.dentistaService.ListarTudo();
+    this.dentistaArray.push(res.data.items);
+    this.desserts = this.dentistaArray[0];
   }
 
   lista() {
     this.limpar();
     this.getLista();
+    console.log("limpar");
   }
 
   limpar() {
-    this.produto = [];
+    this.$nuxt.$router.push({ name: "Dentistas" });
     this.desserts = [];
+    this.dentistaArray = [];
     console.log(this.desserts);
-    console.log(this.produto);
-  }
-
-  abrirProdutoDialog() {
-    this.dialogState = true;
-  }
-
-  fecharProdutoDialog() {
-    this.dialogState = false;
+    console.log(this.dentistaArray);
   }
 }
 </script>

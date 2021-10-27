@@ -5,7 +5,6 @@
       <TabelaEstoque @abrirProdutoDialog="abrirProdutoDialog()" />
     </div>
 
-    <ProdutoDialog v-model="dialogState" @fechou="fecharProdutoDialog()" />
     <Nuxt />
   </v-app>
 </template>
@@ -16,15 +15,7 @@ import { PageBase } from "~/core/models/PageBase";
 
 @Component
 export default class Estoque extends PageBase {
-  dialogState: boolean = false;
-
-  abrirProdutoDialog() {
-    this.dialogState = true;
-  }
-
-  fecharProdutoDialog() {
-    this.dialogState = false;
-  }
+  prodtutoAdicionado() {}
 }
 </script>
 

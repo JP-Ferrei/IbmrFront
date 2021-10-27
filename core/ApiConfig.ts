@@ -31,9 +31,10 @@ http.interceptors.response.use(
       const response = error.response;
       console.log(response);
       console.log("teste");
-      localStorage.clear();
-      window.location.href = "/login";
     }
+    //   localStorage.clear();
+    //   window.location.href = "/login";
+    // }
 
     return Promise.reject(error);
   }

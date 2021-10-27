@@ -1,6 +1,9 @@
 <template>
   <v-app>
-    <MenuLateral style="top: 0px; left: 0px; " />
+    <div class="d-flex">
+      <MenuLateral style="top: 0px; left: 0px; z-index: 100;" />
+      <TabelaAgendamentos />
+    </div>
     <Nuxt />
   </v-app>
 </template>

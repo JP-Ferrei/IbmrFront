@@ -6,7 +6,7 @@
       persistent
       max-width="890px"
     >
-      <v-form ref="formCadastroCliente" lazy-validation>
+      <v-form ref="formCadastroCliente" v-model="valid" lazy-validation>
         <v-card>
           <v-card-text>
             <v-container fluid>
@@ -19,7 +19,7 @@
               </v-row>
               <v-row>
                 <v-col cols="12">
-                  <p class="font-weight-bold">Informações do produto:</p>
+                  <p class="font-weight-bold">Informações do cliente:</p>
                 </v-col>
               </v-row>
               <v-row>
@@ -28,10 +28,10 @@
                   <v-text-field
                     :rules="[
                       () =>
-                        !!produto.nome ||
-                        'Por favor, forneça o nome do produto.'
+                        !!cliente.nome ||
+                        'Por favor, forneça o nome do cliente.'
                     ]"
-                    v-model="produto.nome"
+                    v-model="cliente.nome"
                     dense
                     flat
                     :label="isMobile ? '' : 'Nome'"
@@ -41,19 +41,16 @@
                   />
                 </v-col>
                 <v-col cols="2">
-                  <span class="d-block mt-5 mb-n2" v-if="isMobile"
-                    >Quantidade</span
-                  >
+                  <span class="d-block mt-5 mb-n2" v-if="isMobile">Cpf</span>
                   <v-text-field
                     :rules="[
                       () =>
-                        !!produto.quantidade ||
-                        'Por favor, forneça a quantidade do produto.'
+                        !!cliente.cpf || 'Por favor, forneça o cpf do cliente.'
                     ]"
-                    v-model="produto.quantidade"
+                    v-model="cliente.cpf"
                     dense
                     flat
-                    :label="isMobile ? '' : 'quantidade'"
+                    :label="isMobile ? '' : 'Cpf'"
                     :outlined="!isMobile"
                     :solo="!isMobile"
                     :regular="isMobile"
@@ -62,30 +59,56 @@
 
                 <v-col cols="6">
                   <span class="d-block mt-5 mb-n2" v-if="isMobile"
-                    >validade</span
-                  >
-                  <v-date-picker
-                    v-model="produto.validade"
-                    color="#89FFD5"
-                  ></v-date-picker> </v-col
-                ><v-col cols="6">
-                  <span class="d-block mt-5 mb-n2" v-if="isMobile"
-                    >descricao</span
+                    >telefone</span
                   >
                   <v-text-field
                     :rules="[
                       () =>
-                        !!produto.descricao ||
-                        'Por favor, forneça a descricao do produto.'
+                        !!cliente.telefone ||
+                        'Por favor, forneça a telefone do cliente.'
                     ]"
-                    v-model="produto.descricao"
+                    v-model="cliente.telefone"
                     dense
                     flat
-                    :label="isMobile ? '' : 'descricao'"
+                    :label="isMobile ? '' : 'telefone'"
+                    :outlined="!isMobile"
+                    :solo="!isMobile"
+                    :regular="isMobile"
+                  /> </v-col
+                ><v-col cols="6">
+                  <span class="d-block mt-5 mb-n2" v-if="isMobile"
+                    >reponsavel</span
+                  >
+                  <v-text-field
+                    v-model="cliente.reponsavel"
+                    dense
+                    flat
+                    :label="isMobile ? '' : 'reponsavel'"
                     :outlined="!isMobile"
                     :solo="!isMobile"
                     :regular="isMobile"
                   />
+                </v-col>
+
+                <v-col cols="6">
+                  <span class="d-block mt-5 mb-n2" v-if="isMobile">email</span>
+                  <v-text-field
+                    v-model="cliente.email"
+                    dense
+                    flat
+                    :label="isMobile ? '' : 'email'"
+                    :outlined="!isMobile"
+                    :solo="!isMobile"
+                    :regular="isMobile"
+                  />
+                </v-col>
+
+                <v-col cols="6">
+                  <span class="d-block mt-5 mb-2">Data de Nascimento</span>
+                  <v-date-picker
+                    v-model="cliente.dataNascimento"
+                    color="#89FFD5"
+                  ></v-date-picker>
                 </v-col>
               </v-row>
               <v-row justify="center" class="mt-7">
@@ -97,7 +120,7 @@
                     width="100%"
                     large
                   >
-                    <span class="textPrimary--text">Cadastrar Produto</span>
+                    <span class="textPrimary--text">Cadastrar cliente</span>
                   </v-btn>
                 </v-col>
               </v-row>
@@ -110,24 +133,22 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Watch } from "vue-property-decorator";
-import { Armazem } from "~/core/models/Geral/Armazem";
-import { Produto } from "~/core/models/Geral/Produto";
+import { Component, Prop, Watch } from "nuxt-property-decorator";
+import Vuetify from "vuetify/lib";
+import { Cliente } from "~/core/models/Ator/Cliente";
 import { PageBase } from "~/core/models/PageBase";
-import { ArmazemService } from "~/core/services/geral/ArmazemService";
-import { ProdutoService } from "~/core/services/geral/ProdutoService";
+import { ClienteService } from "../core/services/Ator/ClienteService";
 
 @Component
-export default class ProdutoDialog extends PageBase {
+export default class ClienteDialog extends PageBase {
   @Prop() value: boolean = false;
   dialog: boolean = false;
 
-  loadingBotao: boolean = false;
-  armazem: Armazem = new Armazem();
+  cliente: Cliente = new Cliente();
+  clienteService: ClienteService = new ClienteService();
 
-  produto: Produto = new Produto();
-  produtoService: ProdutoService = new ProdutoService();
-  armazemService: ArmazemService = new ArmazemService();
+  loadingBotao: boolean = false;
+
   @Watch("value")
   async WatchValue() {
     this.dialog = this.value;
@@ -140,40 +161,19 @@ export default class ProdutoDialog extends PageBase {
 
   async salvar() {
     this.loadingBotao = true;
-    try {
-      // const res = await this.armazemService.AdicionarProduto(
-      //   this.armazem.id,
-      //   this.produto
-      // );
-      const produtoObject = {
-        nome: this.produto.nome,
-        quantidade: this.produto.quantidade,
-        descricao: this.produto.descricao,
-        validade: this.produto.validade.toString(),
-        armazemId: this.produto.armazem.id
-      };
 
-      console.log(produtoObject);
-      const res = await this.produtoService.Post(produtoObject);
+    try {
+      this.cliente.senha = "null";
+      this.cliente.ativo = true;
+      this.clienteService.post(this.cliente);
     } catch (error) {
       console.log(error);
       alert("Erro ao escrever no banco");
     } finally {
       this.loadingBotao = false;
       this.fechar();
-      this.$emit("produtoAdicionado");
+      this.$emit("ClienteAdicionado");
     }
-  }
-
-  async getArmazemid() {
-    const response = await this.armazemService.GetFirst();
-    this.armazem = response.data;
-    this.produto.armazem = this.armazem;
-  }
-
-  async created() {
-    await this.getArmazemid();
-    console.log(this.produto.armazem);
   }
 }
 </script>

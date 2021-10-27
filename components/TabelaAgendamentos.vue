@@ -10,7 +10,7 @@
         class="text-caption"
         color="success"
         min-width="160"
-        @click="abrirProdutoDialog()"
+        @click="abrirDialog()"
         ><v-icon class="mr-1">mdi-plus</v-icon>Adicionar</v-btn
       >
     </v-col>
@@ -19,10 +19,11 @@
       <v-data-table
         :headers="colunas"
         :items="desserts"
-        :items-per-page="5"
+        item-key="nome"
+        sort-by="nome"
+        :search="search"
         class="elevation-1"
-      >
-        <template v-slot:top>
+        ><template v-slot:top>
           <v-text-field
             v-model="search"
             label="Pesquisar Nome"
@@ -31,50 +32,51 @@
         </template>
       </v-data-table>
     </v-card>
-    <ProdutoDialog
+    <ConsultaDialog
       v-model="dialogState"
-      @fechou="fecharProdutoDialog()"
-      @produtoAdicionado="lista()"
+      @fechou="fecharDialog()"
+      @ConsultaAdicionado="lista()"
     />
   </div>
 </template>
-
 <script lang="ts">
 import { Component, Prop, Watch } from "nuxt-property-decorator";
-import { Produto } from "~/core/models/Geral/Produto";
 import { PageBase } from "~/core/models/PageBase";
-import { ProdutoService } from "~/core/services/geral/ProdutoService";
-import { ArmazemService } from "../core/services/geral/ArmazemService";
+import { Consulta } from "~/core/models/Geral/Consulta";
+import { ConsultaService } from "~/core/services/geral/ConsultaService";
+
 @Component
-export default class TabelaEstoque extends PageBase {
+export default class TabelaClientes extends PageBase {
+  consultas: Consulta[] = [];
+  search = "";
   dialogState: boolean = false;
+  puxarLista: number = 0;
 
-  armazemService: ArmazemService = new ArmazemService();
-  produtoService: ProdutoService = new ProdutoService();
-
-  search: string = "";
-  produto: Produto[] = [];
+  consultaService: ConsultaService = new ConsultaService();
   desserts: any = [];
-
   colunas: any = [
-    {
-      text: "Produtos",
-      align: "start",
-      sortable: true,
-      value: "nome"
-    },
-    { text: "Quantidade", value: "quantidade" },
-    { text: "validade", value: "validade" },
-    { text: "Data Adicao", value: "dataDeAdicao" }
+    { text: "id", value: "id" },
+    { text: "Cliente", value: "cliente.nome", sortable: true },
+    { text: "Dentista", value: "dentista.nome", sortable: true },
+    { text: "Data", value: "dataHora" }
   ];
+
+  abrirDialog() {
+    this.dialogState = true;
+  }
+
+  fecharDialog() {
+    this.dialogState = false;
+  }
 
   async created() {
     this.getLista();
   }
+
   async getLista() {
-    const res = await this.produtoService.ListarTudo();
-    this.produto.push(res.data.items);
-    this.desserts = this.produto[0];
+    const res = await this.consultaService.Get("Cliente,Dentista");
+    this.consultas.push(res.data.items);
+    this.desserts = this.consultas[0];
   }
 
   lista() {
@@ -83,18 +85,10 @@ export default class TabelaEstoque extends PageBase {
   }
 
   limpar() {
-    this.produto = [];
+    this.consultas = [];
     this.desserts = [];
     console.log(this.desserts);
-    console.log(this.produto);
-  }
-
-  abrirProdutoDialog() {
-    this.dialogState = true;
-  }
-
-  fecharProdutoDialog() {
-    this.dialogState = false;
+    console.log(this.consultas);
   }
 }
 </script>

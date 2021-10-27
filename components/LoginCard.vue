@@ -74,7 +74,6 @@
 <script lang="ts">
 import { Component, Prop, Watch, Vue } from "nuxt-property-decorator";
 import { AutenticadorService } from "../core/services/geral/AutenticadorService";
-import axios from "axios";
 import { PageBase } from "~/core/models/PageBase";
 
 @Component
@@ -91,10 +90,18 @@ export default class LoginCard extends PageBase {
   async login() {
     this.carregando = true;
     try {
+      console.log("1");
       const res = await this.autenticador.AutenticarUsuario(this.acesso);
+      console.log("2");
       localStorage.setItem("sessionApp", JSON.stringify(res.data));
+      console.log("3");
+
       this.$router.push({ name: "index" });
+      this.$nuxt.$router.push({ name: "index" });
+      console.log("4");
+
       console.log(res.data);
+      console.log("5");
     } catch (error) {
       this.menssagemErro = "Email ou senha Incorreto";
     } finally {

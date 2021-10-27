@@ -37,6 +37,9 @@
             </v-list-item-icon>
           </v-list-item>
         </v-list>
+        <v-btn width="100%" depressed height="50" color="error" @click="sair()"
+          ><v-icon> mdi-logout </v-icon>
+        </v-btn>
       </v-navigation-drawer>
     </v-card>
   </div>
@@ -69,6 +72,11 @@ export default class MenuLateral extends PageBase {
 
   to(item: any) {
     this.$router.push(item.to);
+  }
+
+  sair() {
+    localStorage.clear();
+    this.$router.push({ name: "login" });
   }
 }
 </script>
