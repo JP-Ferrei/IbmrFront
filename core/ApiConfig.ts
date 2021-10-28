@@ -4,13 +4,12 @@ export const httpHeader = {
   headers: {
     "Content-Type": "application/json;charset=UTF-8",
     "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS",
     include: ""
   }
 };
 
 export const http = axios.create({
-  baseURL: "https://localhost:5001/v1/",
+  baseURL: "http://localhost:5000/v1/",
   headers: httpHeader
 });
 
